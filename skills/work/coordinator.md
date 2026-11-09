@@ -23,9 +23,9 @@ Repeat until every slice is merged or blocked on the user:
    the sub-issue to its last comment; follow the workflow's acceptance rules;
    open the PR with the repo template; do not merge; reply with the PR link,
    what you ran and what is under 待确认".
-   Add to every worker prompt: "follow the test rules in the work skill: related tests
-   while coding, one full run under ~/.claude/skills/work/scripts/test-lock.sh with
-   --maxWorkers=2, compare with test-baseline.sh, never rerun a suite that is running".
+   Add to every worker prompt: "follow 'When tests and review run' in the work skill:
+   only tests next to the change while building; at hand-over lint plus branch-related
+   tests; no full suite; do not run /code-review yourself, the coordinator reviews".
 3. When a worker returns a PR, start a review subagent with no other context:
    only the sub-issue and `gh pr diff <n>`. Ask for blocking problems only, and tell it not to run any tests.
    Send blocking findings back to a worker for the same PR. Two failed reviews

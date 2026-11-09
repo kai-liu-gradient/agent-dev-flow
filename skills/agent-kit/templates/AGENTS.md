@@ -26,8 +26,8 @@ docs/agents/workflow.md.
 
 ## Shared foundations
 
-Modules most of the code imports. A PR touching one runs the full suite (tier T3 in
-docs/agents/workflow.md); other back-end PRs run only related tests.
+Modules most of the code imports. A PR touching one says so in 待确认 and suggests
+`/work fulltest` before merging; the batch merge runs the full suite in any case.
 
 {{FOUNDATIONS}}
 

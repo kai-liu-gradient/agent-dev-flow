@@ -37,7 +37,7 @@ cd ~/workspace/agent-dev-flow && ./install.sh --with-optional
 
 | skill | 用法 | 做什么 |
 |---|---|---|
-| `work` | `/work <需求>`、`/work 小/中/大 <需求>`、`/work #<issue>`、`/work merge-batch #a #b ...`、`/work baseline`、`/work coordinate #<epic>` | 先判断大小，再走完整流程：worktree → 实现 → 全量测试 → `/code-review` → PR → 按 A/B 级合并 → 收工。大需求会建成 epic 和子 issue，交给一个主控会话推进 |
+| `work` | `/work <需求>`、`/work 小/中/大 <需求>`、`/work #<issue>`、`/work fulltest`、`/work merge-batch #a #b ...`、`/work baseline`、`/work coordinate #<epic>` | 先判断大小，再走完整流程：worktree → 实现 → 全量测试 → `/code-review` → PR → 按 A/B 级合并 → 收工。大需求会建成 epic 和子 issue，交给一个主控会话推进 |
 | `wrap` | `/wrap`，或说"收工" | 提交本会话自己的改动，在 PR 或 issue 里写进度，列出后台进程，然后告诉你能不能关、怎么恢复 |
 | `agent-kit` | `/agent-kit`、`/agent-kit refresh`、`/agent-kit sessions` | 从仓库本身读出信息，生成 `AGENTS.md`、`LESSONS.md`、`docs/agents/workflow.md`、`docs/agents/loops.md` 和 PR 模板；或者清点这台机器上开着的 Claude 会话 |
 
@@ -49,16 +49,15 @@ cd ~/workspace/agent-dev-flow && ./install.sh --with-optional
 
 ## 多个会话共用一台机器
 
-几个会话同时干活时，把电脑压垮的主要是全量测试。不是每个 PR 都需要跑全量：
+几个会话同时干活时，把电脑压垮的主要是全量测试，所以全量只在固定时机跑：
 
-| 档位 | PR 改了什么 | 开 PR 前跑的测试 |
+| 层 | 什么时候 | 跑什么 |
 |---|---|---|
-| T0 | 只有文档 | 不跑 |
-| T1 | 只有前端 | 相关测试、lint、build |
-| T2 | 后端普通代码 | 和改动相关的测试（`jest --changedSince=origin/<默认分支>`）、lint |
-| T3 | 公共底座、schema、测试配置，或改动超过 1000 行 | T2 + 全量跑一次 |
+| 1. 迭代中 | 每改一次 | 只跑改动附近的测试。不跑全量，不做 review |
+| 2. 交付时 | 开 PR 前，只一次 | lint、和整个分支相关的测试（`jest --changedSince`）、一次 `/code-review` |
+| 3. 全量 | 只在 `/work fulltest` 时，以及每次 `/work merge-batch` 跑一次 | 经过测试锁跑全量，和基线对比 |
 
-每次合并仍然会跑全量，只是一批跑一次：`/work merge-batch #a #b #c` 把准备好的 PR 叠到默认分支上（`scripts/merge-batch.sh build`），跑一次全量；有新增失败时，找出它依赖的是哪个 PR（`merge-batch.sh blame`），把那个 PR 拿掉，其余照合。合完后 `/work baseline` 记录默认分支上的失败，供后续对比。
+`/work merge-batch #a #b #c` 把准备好的 PR 叠到默认分支上，跑一次全量；有新增失败时找出它依赖的 PR，把它拿掉，其余照合。合完后 `/work baseline` 记录默认分支上的失败，供后续对比。
 
 任何全量测试都遵守：
 

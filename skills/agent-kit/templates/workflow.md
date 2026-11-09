@@ -66,18 +66,17 @@ check that was not run is listed as not run, never left out.
 6. Browser checks only look and open dialogs. Never press a button that acts
    on real data or real machines.
 
-## Which tests a change needs
+## When tests and review run
 
-| Tier | The PR changes | Run before the PR |
+| Layer | When | What |
 |---|---|---|
-| T0 | Docs only | Nothing |
-| T1 | Front end only | Related tests, lint, build |
-| T2 | Back end, normal code | Tests related to the change against the default branch (`jest --changedSince=origin/<default>`), lint |
-| T3 | A shared foundation (AGENTS.md), schema or migrations, test config, or 1000+ changed lines | T2, then the full suite once under the lock |
+| 1. Iterating | After every change | Only the tests next to the change (`--findRelatedTests`, `vitest related`). No full suite, no review |
+| 2. Handing over | Once, before the PR opens | Lint, tests related to the whole branch (`jest --changedSince=origin/<default>`), one `/code-review` |
+| 3. Full suite | Only on request (`/work fulltest`) and once per batch merge (`/work merge-batch`) | Full suite under the lock, compared with the baseline |
 
-Several ready PRs merge together with one full run (`/work merge-batch`); the
-default branch's baseline is refreshed after merges (`/work baseline`). Say the
-tier in the PR's 验证 section.
+Review happens once per PR, on the diff, without running tests; fixing its findings
+does not start another round. Touching a shared foundation (AGENTS.md) is flagged in
+待确认 with a suggestion to run `/work fulltest`; it does not run it automatically.
 
 ## Running tests
 
