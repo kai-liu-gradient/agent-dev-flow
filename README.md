@@ -120,4 +120,4 @@ The skills take effect in new Claude Code sessions.
 
 ## License
 
-Private repository; no license granted yet.
+No license file yet, so default copyright applies. Open an issue if you need one.

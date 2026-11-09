@@ -111,4 +111,4 @@ hd.sh available | name <标签> | notify <标题> [内容] | spawn <tab> <会话
 
 ## 许可
 
-私有仓库，暂未授予许可。
+暂未添加许可证文件，按默认版权处理。需要的话请提 issue。
