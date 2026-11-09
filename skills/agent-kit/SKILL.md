@@ -46,6 +46,11 @@ Collect, in one pass:
 - Hot files: the 10 most-changed files in the last 60 days, excluding tests,
   docs, lockfiles and generated files:
   `git log --since=60.days --name-only --pretty=format: | grep -v '^$' | sort | uniq -c | sort -rn`
+- Shared foundations: the 8-15 source files imported by the most other files (count
+  `require(` / `import ... from` targets), plus the app entry, config and the DB
+  client modules. These decide when a PR needs the full suite.
+- Related-test commands for each package (`jest --changedSince=origin/<default>`,
+  `vitest related --run`), and the full-suite command with `--maxWorkers=2`.
 - Tier B candidates (paths where a mistake is expensive): schema and
   migrations, Dockerfiles and image build, CI workflows, infra (k8s, helm,
   terraform), auth and permissions, billing and payments, data-fix scripts,

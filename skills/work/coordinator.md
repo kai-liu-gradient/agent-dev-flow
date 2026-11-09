@@ -31,8 +31,11 @@ Repeat until every slice is merged or blocked on the user:
    Send blocking findings back to a worker for the same PR. Two failed reviews
    on one PR: stop that slice, mark it 阻塞, and put both reviews in the summary.
 4. Tier A PR with acceptance and review passed and 待确认 empty: merge it.
-   Tier B: mark 待合并（B 级）.
-5. Update the status table after every change. Keep the epic as the only record
+   Tier B: mark 待合并（B 级）. When two or more PRs are ready at once, merge them
+   with `/work merge-batch` (one full test run for the batch) rather than one by one;
+   for Tier B the user approves the batch list once.
+5. After merges land, run `/work baseline` so workers compare against the new head.
+6. Update the status table after every change. Keep the epic as the only record
    of progress; do not rely on this conversation.
 
 ## Report

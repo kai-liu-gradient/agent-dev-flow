@@ -24,6 +24,13 @@ you think are related: guard tests live in places a change does not touch. Run i
 once, through the machine-wide lock, with two workers. See "Running tests" in
 docs/agents/workflow.md.
 
+## Shared foundations
+
+Modules most of the code imports. A PR touching one runs the full suite (tier T3 in
+docs/agents/workflow.md); other back-end PRs run only related tests.
+
+{{FOUNDATIONS}}
+
 ## Hot files
 
 Changed most often in the last 60 days (as of {{HOT_DATE}}). Two sessions

@@ -37,7 +37,7 @@ cd ~/workspace/agent-dev-flow && ./install.sh --with-optional
 
 | Skill | Usage | What it does |
 |---|---|---|
-| `work` | `/work <requirement>`, `/work small\|medium\|large <requirement>` (or `小/中/大`), `/work #<issue>`, `/work coordinate #<epic>` | Sizes the requirement, then runs the whole flow: worktree → implementation → full test suite → `/code-review` → PR → merge by tier → wrap-up. Large work becomes an epic with sub-issues and a coordinator session |
+| `work` | `/work <requirement>`, `/work small\|medium\|large <requirement>` (or `小/中/大`), `/work #<issue>`, `/work merge-batch #a #b ...`, `/work baseline`, `/work coordinate #<epic>` | Sizes the requirement, then runs the whole flow: worktree → implementation → full test suite → `/code-review` → PR → merge by tier → wrap-up. Large work becomes an epic with sub-issues and a coordinator session |
 | `wrap` | `/wrap`, or say "wrap up" / "收工" | Commits the session's own changes, writes progress on the PR or issue, lists background processes, then says whether the session can be closed and how to reopen it |
 | `agent-kit` | `/agent-kit`, `/agent-kit refresh`, `/agent-kit sessions` | Writes `AGENTS.md`, `LESSONS.md`, `docs/agents/workflow.md`, `docs/agents/loops.md` and a PR template for a repository, filled in from the repo itself; or lists the Claude sessions running on this machine |
 
@@ -49,7 +49,18 @@ Read-only scripts in `skills/agent-kit/scripts/`:
 
 ## Many sessions, one machine
 
-Full test suites are what overload a laptop when several sessions work at once. `/work` and the coordinator follow these rules:
+Full test suites are what overload a laptop when several sessions work at once. Not every PR needs one:
+
+| Tier | The PR changes | Tests before the PR |
+|---|---|---|
+| T0 | Docs only | None |
+| T1 | Front end only | Related tests, lint, build |
+| T2 | Back end, normal code | Tests related to the change (`jest --changedSince=origin/<default>`), lint |
+| T3 | A shared foundation, schema, test config, or 1000+ lines | T2 + the full suite once |
+
+The full suite still runs on every merge, once per batch: `/work merge-batch #a #b #c` stacks ready PRs on the default branch (`scripts/merge-batch.sh build`), runs the suite once, maps any new failure to the PR it depends on (`merge-batch.sh blame`), drops that PR and merges the rest. `/work baseline` then records the default branch's failures for the next comparisons.
+
+Rules for any full run:
 
 - Related tests only while coding; the full suite once, before the PR.
 - Full suites go through `skills/work/scripts/test-lock.sh <command>`: one at a time on the machine (set `TEST_LOCK_SLOTS=2` for more), the rest queue. `test-lock.sh --status` shows who holds it.

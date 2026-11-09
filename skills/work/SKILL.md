@@ -23,6 +23,8 @@ the repo's AGENTS.md asks for (default: the user's language); code and comments 
 | `/work <需求>` | Size it yourself, say the size in one line, go |
 | `/work 小 / 中 / 大 <需求>` | The user fixed the size; do not re-argue it |
 | `/work #<issue>` | Start from an existing issue; size it from its scope |
+| `/work merge-batch #a #b ...` | Merge several ready PRs with one full test run: read `merge-batch.md` next to this file and follow it |
+| `/work baseline` | Refresh the default branch's failing-test baseline (see "Which tests a change needs") |
 | `/work coordinate #<epic>` | Run as the coordinator of that epic: read `coordinator.md` next to this file and follow it instead of the sections below |
 | `/work` alone | Ask for the requirement in one short question |
 
@@ -62,10 +64,9 @@ work (Tier B PR ready, split table to confirm, questions collected).
 ## 3a. Small
 
 1. Enter a worktree (`EnterWorktree`, or `git worktree add .claude/worktrees/<slug> -b <type>/<slug> origin/<default>`).
-2. Implement, running only related tests as you go. Before the PR, run the full suite
-   of the changed package once through `scripts/test-lock.sh` with `--maxWorkers=2`,
-   and lint. Only failures `scripts/test-baseline.sh new` reports count (see
-   "Running tests on a shared machine").
+2. Implement, running only related tests as you go. Before the PR, run the tests the
+   change's tier needs (see "Which tests a change needs") and lint. Only failures
+   `scripts/test-baseline.sh new` reports count.
 3. Run `/code-review` on the diff; fix what it finds.
 4. Open the PR with the repo's template.
 5. Merge if Tier A and every acceptance check passed; otherwise stop, say
@@ -112,6 +113,28 @@ conservative option and put it under 待确认.
 6. Run `/wrap` here. This session's context is full of discussion; the
    coordinator starts clean from the epic.
 
+## Which tests a change needs
+
+Pick the tier from the files the PR changes; the highest tier any file hits wins.
+The repo's AGENTS.md lists its **shared foundations** (modules most of the code
+imports) and the exact commands; use those when present.
+
+| Tier | The PR changes | Run before the PR |
+|---|---|---|
+| T0 | Docs only | Nothing |
+| T1 | Front end only | Related tests (`vitest related --run <files>`), lint, build |
+| T2 | Back end, normal code | Tests related to the change against the default branch (`jest --changedSince=origin/<default>`), lint |
+| T3 | A shared foundation, schema or migrations, test config, or 1000+ changed lines | T2, then the full suite once under the lock |
+
+The full suite still runs on every merge, just not per PR: batched merges run it once
+for the whole batch (`/work merge-batch`), and `/work baseline` runs it on the
+default branch after merges. Say the tier in the PR's 验证 section.
+
+**`/work baseline`:** in a worktree at the latest default branch, run each package's
+full suite under the lock with `--json --outputFile`, then
+`scripts/test-baseline.sh put <pkg> <file>`. Run it after a batch merge, or when
+`test-baseline.sh get` says the baseline is from an older commit.
+
 ## Running tests on a shared machine
 
 Several sessions share one laptop. Full suites are the heaviest thing they do,
@@ -119,7 +142,7 @@ so these rules hold for every session, worker and reviewer:
 
 1. **While coding, run only related tests**: `jest --findRelatedTests <files>`,
    `vitest related <files> --run`, or the test files you touched.
-2. **The full suite runs once, before opening the PR**, and through the lock:
+2. **A full suite (T3, a batch, or the baseline) runs through the lock:**
    `scripts/test-lock.sh <command>` (next to this file). It lets one full suite
    run on the machine at a time; others wait their turn. Never bypass it.
 3. **Two workers at most**: add `--maxWorkers=2` to jest and vitest.

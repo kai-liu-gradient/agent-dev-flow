@@ -66,6 +66,19 @@ check that was not run is listed as not run, never left out.
 6. Browser checks only look and open dialogs. Never press a button that acts
    on real data or real machines.
 
+## Which tests a change needs
+
+| Tier | The PR changes | Run before the PR |
+|---|---|---|
+| T0 | Docs only | Nothing |
+| T1 | Front end only | Related tests, lint, build |
+| T2 | Back end, normal code | Tests related to the change against the default branch (`jest --changedSince=origin/<default>`), lint |
+| T3 | A shared foundation (AGENTS.md), schema or migrations, test config, or 1000+ changed lines | T2, then the full suite once under the lock |
+
+Several ready PRs merge together with one full run (`/work merge-batch`); the
+default branch's baseline is refreshed after merges (`/work baseline`). Say the
+tier in the PR's 验证 section.
+
 ## Running tests
 
 Several sessions share one laptop. Full suites are the heaviest thing they do,
