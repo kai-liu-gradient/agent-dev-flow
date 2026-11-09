@@ -5,7 +5,7 @@ description: Take a requirement from one sentence to merged PRs with the right a
 
 # /work
 
-Needs: the `grilling` and `code-review` skills, and `wrap` from this same package.
+Needs: the `grilling` and `code-review` skills, `scripts/test-lock.sh` and `scripts/test-baseline.sh` here, and `wrap` from this same package.
 `gh`, `git`, `jq`. herdr is optional (used to open the coordinator tab).
 
 One entry point for every requirement. The user should only have to answer
@@ -62,8 +62,10 @@ work (Tier B PR ready, split table to confirm, questions collected).
 ## 3a. Small
 
 1. Enter a worktree (`EnterWorktree`, or `git worktree add .claude/worktrees/<slug> -b <type>/<slug> origin/<default>`).
-2. Implement. Run the full suite of the changed package and lint. Compare failures
-   against the default branch; only new failures count.
+2. Implement, running only related tests as you go. Before the PR, run the full suite
+   of the changed package once through `scripts/test-lock.sh` with `--maxWorkers=2`,
+   and lint. Only failures `scripts/test-baseline.sh new` reports count (see
+   "Running tests on a shared machine").
 3. Run `/code-review` on the diff; fix what it finds.
 4. Open the PR with the repo's template.
 5. Merge if Tier A and every acceptance check passed; otherwise stop, say
@@ -109,6 +111,27 @@ conservative option and put it under 待确认.
    coordinator's summary), and that this session will now wrap up.
 6. Run `/wrap` here. This session's context is full of discussion; the
    coordinator starts clean from the epic.
+
+## Running tests on a shared machine
+
+Several sessions share one laptop. Full suites are the heaviest thing they do,
+so these rules hold for every session, worker and reviewer:
+
+1. **While coding, run only related tests**: `jest --findRelatedTests <files>`,
+   `vitest related <files> --run`, or the test files you touched.
+2. **The full suite runs once, before opening the PR**, and through the lock:
+   `scripts/test-lock.sh <command>` (next to this file). It lets one full suite
+   run on the machine at a time; others wait their turn. Never bypass it.
+3. **Two workers at most**: add `--maxWorkers=2` to jest and vitest.
+4. **One run at a time per worktree.** If a run is in progress, wait for it;
+   never start a second one, and never rerun just to grep the output differently.
+   Write results to a file (`--json --outputFile=...`) and read that.
+5. **Do not run the default branch's suite yourself.** Compare against the shared
+   baseline: `scripts/test-baseline.sh new <pkg> <result.json>` lists only new
+   failures. If no baseline exists yet, one session runs the default branch under
+   the lock and records it with `test-baseline.sh put`; everyone else reuses it.
+6. **Reviewers never run tests.** They read the diff and the test results the PR
+   reports.
 
 ## Rules that apply to every size
 

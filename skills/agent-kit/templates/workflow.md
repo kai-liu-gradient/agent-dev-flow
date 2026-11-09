@@ -57,13 +57,35 @@ check that was not run is listed as not run, never left out.
    log line, screenshot text), not a similar sample made up for the test.
 3. Every sibling of the bug gets the fix: grep for the same pattern in other
    callers, entry points and variants.
-4. The full suite and lint for the changed package pass. A test already red
-   on the default branch gets an issue naming its cause; it is not called
-   "flaky" or "the same on main" and shipped past.
+4. The full suite and lint for the changed package pass, apart from failures the
+   shared baseline already has (`test-baseline.sh new`). A test already red on the
+   default branch gets an issue naming its cause; it is not called "flaky" and
+   shipped past.
 5. UI changes include a screenshot. Schema changes include the migration or
    push step and the command that applies it on deploy.
 6. Browser checks only look and open dialogs. Never press a button that acts
    on real data or real machines.
+
+## Running tests
+
+Several sessions share one laptop. Full suites are the heaviest thing they do,
+so these rules hold for every session, worker and reviewer:
+
+1. **While coding, run only related tests**: `jest --findRelatedTests <files>`,
+   `vitest related <files> --run`, or the test files you touched.
+2. **The full suite runs once, before opening the PR**, and through the lock:
+   `~/.claude/skills/work/scripts/test-lock.sh <command>`. It lets one full suite
+   run on the machine at a time; others wait their turn. Never bypass it.
+3. **Two workers at most**: add `--maxWorkers=2` to jest and vitest.
+4. **One run at a time per worktree.** If a run is in progress, wait for it;
+   never start a second one, and never rerun just to grep the output differently.
+   Write results to a file (`--json --outputFile=...`) and read that.
+5. **Do not run the default branch's suite yourself.** Compare against the shared
+   baseline: `~/.claude/skills/work/scripts/test-baseline.sh new <pkg> <result.json>` lists only new
+   failures. If no baseline exists yet, one session runs the default branch under
+   the lock and records it with `test-baseline.sh put`; everyone else reuses it.
+6. **Reviewers never run tests.** They read the diff and the test results the PR
+   reports.
 
 ## Review
 

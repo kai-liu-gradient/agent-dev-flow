@@ -47,6 +47,15 @@ cd ~/workspace/agent-dev-flow && ./install.sh --with-optional
 - `session-index.sh [过滤]`：每个会话的标题、关联的 PR 及状态、你最后说的话、恢复命令；同时存档到 `~/.claude/session-index/`。
 - `wrap-panes.sh`：仅限 herdr，给选中的会话发 `/wrap` 并汇总它们的结论。
 
+## 多个会话共用一台机器
+
+几个会话同时干活时，把电脑压垮的主要是全量测试。`/work` 和主控按下面的规则执行：
+
+- 写代码时只跑相关测试；全量测试只在开 PR 前跑一次。
+- 全量测试通过 `skills/work/scripts/test-lock.sh <命令>` 运行：整台机器同一时间只跑一个（设 `TEST_LOCK_SLOTS=2` 可以放宽），其余排队。`test-lock.sh --status` 查看当前是谁在跑。
+- jest 和 vitest 都加 `--maxWorkers=2`；每个 worktree 同一时间只跑一次；review 不跑测试。
+- 默认分支上本来就失败的测试，每个 commit 用 `skills/work/scripts/test-baseline.sh put` 记录一次；每个 PR 用 `test-baseline.sh new` 和它对比，不再各自重跑默认分支。
+
 ## 在一个仓库里开始
 
 1. 在仓库里打开 Claude Code，运行一次 `/agent-kit`。它读仓库，请你确认合并分级和部署策略，然后开一个 PR 把规范写进去。合并这个 PR。

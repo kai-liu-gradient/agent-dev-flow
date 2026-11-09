@@ -47,6 +47,15 @@ Read-only scripts in `skills/agent-kit/scripts/`:
 - `session-index.sh [filter]` - each session's title, linked PRs and their state, your last message and the reopen command; also saved under `~/.claude/session-index/`.
 - `wrap-panes.sh` - herdr only: send `/wrap` to chosen sessions and collect their answers.
 
+## Many sessions, one machine
+
+Full test suites are what overload a laptop when several sessions work at once. `/work` and the coordinator follow these rules:
+
+- Related tests only while coding; the full suite once, before the PR.
+- Full suites go through `skills/work/scripts/test-lock.sh <command>`: one at a time on the machine (set `TEST_LOCK_SLOTS=2` for more), the rest queue. `test-lock.sh --status` shows who holds it.
+- `--maxWorkers=2` for jest and vitest; one run per worktree; reviewers never run tests.
+- Failures already on the default branch are recorded once per commit with `skills/work/scripts/test-baseline.sh put`, and every PR compares against them with `test-baseline.sh new` instead of rerunning the default branch.
+
 ## Start in a repository
 
 1. Open Claude Code in the repo and run `/agent-kit` once. It reads the repo, asks you to confirm the merge tiers and the deploy policy, and opens a PR with the rules. Merge it.

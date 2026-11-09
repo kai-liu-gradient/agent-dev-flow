@@ -19,8 +19,10 @@ Read these before changing code:
 | Typecheck | `{{TYPECHECK_CMD}}` |
 | Build | `{{BUILD_CMD}}` |
 
-Run the full suite for the package you changed, not only the tests you think
-are related. Guard tests live in places a change does not touch.
+Before the PR, run the full suite for the package you changed, not only the tests
+you think are related: guard tests live in places a change does not touch. Run it
+once, through the machine-wide lock, with two workers. See "Running tests" in
+docs/agents/workflow.md.
 
 ## Hot files
 

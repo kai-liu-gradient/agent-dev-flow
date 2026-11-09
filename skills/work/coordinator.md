@@ -17,14 +17,17 @@ write product code yourself.
 Repeat until every slice is merged or blocked on the user:
 
 1. Pick the next slices whose dependencies are merged. At most 3 workers at
-   once. Slices touching the same hot file never run at the same time.
+   once (their full test runs still queue on the machine-wide test lock). Slices touching the same hot file never run at the same time.
 2. Start each worker as a background subagent with worktree isolation. Its
    prompt: the sub-issue number, "read AGENTS.md, docs/agents/workflow.md and
    the sub-issue to its last comment; follow the workflow's acceptance rules;
    open the PR with the repo template; do not merge; reply with the PR link,
    what you ran and what is under 待确认".
+   Add to every worker prompt: "follow the test rules in the work skill: related tests
+   while coding, one full run under ~/.claude/skills/work/scripts/test-lock.sh with
+   --maxWorkers=2, compare with test-baseline.sh, never rerun a suite that is running".
 3. When a worker returns a PR, start a review subagent with no other context:
-   only the sub-issue and `gh pr diff <n>`. Ask for blocking problems only.
+   only the sub-issue and `gh pr diff <n>`. Ask for blocking problems only, and tell it not to run any tests.
    Send blocking findings back to a worker for the same PR. Two failed reviews
    on one PR: stop that slice, mark it 阻塞, and put both reviews in the summary.
 4. Tier A PR with acceptance and review passed and 待确认 empty: merge it.
