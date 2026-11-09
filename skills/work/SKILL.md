@@ -41,8 +41,22 @@ without waiting, unless the user overrides.
 
 ## 2. Name the session
 
-- In herdr (`$HERDR_TAB_ID` is set): `herdr tab rename "$HERDR_TAB_ID" "<小|中|大> <short title>"`.
-- Otherwise tell the user once: for next time, start with `claude -n "<title>"`.
+`scripts/hd.sh name "<小|中|大> <short title>"`. In herdr it renames the tab; elsewhere
+it prints the `claude -n` hint, which you pass on once.
+
+## herdr (optional)
+
+`scripts/hd.sh` wraps every herdr call and falls back when herdr is absent, so
+call it the same way either way:
+
+| Command | In herdr | Without herdr |
+|---|---|---|
+| `hd.sh name <label>` | renames this tab | prints a `claude -n` hint |
+| `hd.sh notify <title> <body>` | herdr notification with sound | macOS notification, else terminal bell |
+| `hd.sh spawn <tab> <name> <prompt> [cwd]` | new tab, named claude session, first prompt sent | prints the commands to run |
+
+Notify whenever a turn ends waiting on the user after more than a few minutes of
+work (Tier B PR ready, split table to confirm, questions collected).
 
 ## 3a. Small
 
@@ -51,8 +65,8 @@ without waiting, unless the user overrides.
    against the default branch; only new failures count.
 3. Run `/code-review` on the diff; fix what it finds.
 4. Open the PR with the repo's template.
-5. Merge if Tier A and every acceptance check passed; otherwise stop and say
-   `PR #n 就绪，B 级，等你说合`.
+5. Merge if Tier A and every acceptance check passed; otherwise stop, say
+   `PR #n 就绪，B 级，等你说合`, and `hd.sh notify "PR #n 等你合" "<title>"`.
 6. Run `/wrap`.
 
 No questions to the user unless something is genuinely ambiguous; then take the
@@ -84,9 +98,11 @@ conservative option and put it under 待确认.
 4. **Start the coordinator**:
    `scripts/launch-coordinator.sh <epic-number> "<short title>"` (the `scripts/` folder next to this file;
    usually `~/.claude/skills/work/scripts/`)
-   In herdr it opens a tab `主控 #<n> <title>`, starts `claude -n "epic #<n> <title>"`
-   and sends it `/work coordinate #<n>`. Outside herdr it prints the two commands
-   for the user to run.
+   It goes through `hd.sh spawn`: in herdr a tab `主控 #<n> <title>` opens with
+   `claude -n "epic #<n> <title>"` already sent `/work coordinate #<n>`; outside herdr
+   it prints the commands, and you show them to the user. Exit code 3 means the new
+   tab is waiting for the user to trust the folder: tell them to confirm it there
+   and send the printed prompt. Never answer a trust prompt for them.
 5. Tell the user, in at most 5 lines: the epic link, the coordinator tab name,
    what they will be asked for (Tier B merges and the decisions in the
    coordinator's summary), and that this session will now wrap up.

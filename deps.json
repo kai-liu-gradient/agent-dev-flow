@@ -38,7 +38,7 @@
       { "name": "npx", "why": "安装依赖 skill（npx skills）", "install": "安装 Node.js" }
     ],
     "optional": [
-      { "name": "herdr", "why": "/work 大需求时自动开主控 tab；没有时打印命令让你手动开" },
+      { "name": "herdr", "why": "可选增强：自动改 tab 名、开主控 tab、桌面通知、批量收工、收工后自动关 pane；没有 herdr 时每一项都有退回做法" },
       { "name": "lsof", "why": "会话清点脚本 sessions.sh 用它找进程目录（macOS 自带）" }
     ]
   }

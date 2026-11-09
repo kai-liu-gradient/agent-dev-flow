@@ -31,10 +31,18 @@ conversation. Do the steps in order; report at the end in a few lines.
    commands, subagents. Stop the ones only this session needs. For any that
    must keep running, say what it is and why.
 
-5. **Report**, then stop:
+5. **Mark the tab.** `~/.claude/skills/work/scripts/hd.sh name "✓ 可以关 <short title>"`
+   when safe to close, or `"⚠ 未完 <short title>"` when not, so the tab bar shows it.
+   (Without herdr this prints a hint; skip relaying it.)
+
+6. **Report**, then stop:
    - `safe to close` (or what is blocking it)
    - how to reopen: `claude -r "<session name>"` or `claude --from-pr <n>`
    - the one thing waiting for the user, if any
+
+**`/wrap 关` (or 收工并关闭):** after the report, if safe to close, run
+`~/.claude/skills/work/scripts/hd.sh close-self 5`. In herdr the pane closes 5 seconds
+later; without herdr, tell the user to close the terminal.
 
 Never delete branches, worktrees or files during /wrap, and never change state
 on shared or production machines.

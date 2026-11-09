@@ -44,6 +44,8 @@ Report to the user only when there is something for them, in this shape:
 ```
 
 Questions from workers are collected into 需要你决定, never asked one by one.
+After posting a report, run `~/.claude/skills/work/scripts/hd.sh notify "#<epic> 等你" "<the 等你 line>"`
+(herdr notification, or a desktop notification without herdr).
 
 ## When the user is away
 

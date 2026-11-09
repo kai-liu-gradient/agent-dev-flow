@@ -21,6 +21,11 @@ first: per session it prints the title, linked PRs with their state, the
 user's last message and `claude -r <id>`, and saves the list as Markdown under
 `~/.claude/session-index/`.
 
+In herdr, `session-index.sh` also shows each session's workspace / tab, and
+`scripts/wrap-panes.sh --list` / `--tab <id>` / `<pane-id>...` sends `/wrap` to those
+sessions, waits, and prints how each ended (outside herdr it prints what to paste).
+Only send /wrap to sessions the user chose.
+
 Run `scripts/sessions.sh [filter]` and relay its
 summary: how many can be closed now, how many need /wrap first, which shared
 directories hold uncommitted changes whose owner is unknown. Never kill a

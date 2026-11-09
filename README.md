@@ -31,6 +31,27 @@ cd ~/workspace/agent-dev-flow
 - 访问 GitHub 慢或连不上时，先设好代理再运行，例如：
   `export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890`
 
+## 和 herdr 一起用（可选）
+
+装了 [herdr](https://github.com/ogulcancelik/herdr) 并在里面运行时，下面这些会自动发生；没有 herdr 时都有退回做法，流程照样能走完。
+
+| 场景 | 在 herdr 里 | 没有 herdr |
+|---|---|---|
+| `/work` 开始 | tab 改名为「小/中/大 + 标题」 | 提示下次用 `claude -n "<名字>"` 开会话 |
+| 大需求开主控 | 自动开 tab「主控 #epic」，起好名字的会话并发出 `/work coordinate #epic` | 打印命令，你在新终端里运行 |
+| 等你处理（B 级 PR、拆分方案、汇总表） | herdr 桌面通知 | macOS 系统通知，再不行响铃 |
+| `/wrap` 收工 | tab 名标成「✓ 可以关」或「⚠ 未完」；`/wrap 关` 会在 5 秒后自动关掉 pane | 告诉你能不能关，由你关终端 |
+| 会话清点 `session-index.sh` | 额外显示每个会话在哪个 workspace / tab | 显示终端号（ttys） |
+| 批量收工 `wrap-panes.sh --tab <id>` | 给这个 tab 里的空闲会话都发 `/wrap`，等它们做完，汇总结论 | 告诉你逐个发 `/wrap` |
+
+新 tab 如果停在"是否信任这个文件夹"的确认上，脚本不会替你选，会通知你去确认，并打印要发送的指令。
+
+所有 herdr 调用都经过 `skills/work/scripts/hd.sh`，可以单独使用：
+
+```bash
+hd.sh available | name <标签> | notify <标题> [内容] | spawn <tab> <会话名> <首条指令> [目录] | where <会话ID> | close-self [秒]
+```
+
 ## 依赖
 
 完整清单在 [deps.json](deps.json)，`install.sh` 就是读它来安装的。

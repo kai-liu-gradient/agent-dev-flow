@@ -10,6 +10,9 @@ out_dir="$HOME/.claude/session-index"
 mkdir -p "$out_dir"
 out="$out_dir/$(date +%Y-%m-%d-%H%M).md"
 
+HD="$(cd "$(dirname "$0")/../../work/scripts" 2>/dev/null && pwd)/hd.sh"
+[ -x "$HD" ] || HD="$HOME/.claude/skills/work/scripts/hd.sh"
+
 slug() { printf '%s' "$1" | sed 's#[^A-Za-z0-9]#-#g'; }
 oneline() { tr '\n\r\t' '   ' | sed 's/  */ /g' | cut -c1-"$1"; }
 
@@ -67,6 +70,8 @@ for meta in "$HOME"/.claude/sessions/*.json; do
   printf '  title : %s\n' "$title"
   [ -n "$prs" ] && printf '  PRs   : %s\n' "$prs"
   [ -n "$prompt" ] && printf '  you   : %s\n' "$prompt"
+  loc=$("$HD" where "$sid" 2>/dev/null)
+  [ -n "$loc" ] && printf '  herdr : %s\n' "$loc"
   printf '  reopen: claude -r %s\n' "$sid"
   [ "$status" = "busy" ] && printf '  !! still working - do not close yet\n'
 
@@ -74,6 +79,7 @@ for meta in "$HOME"/.claude/sessions/*.json; do
     echo "## $title"
     echo
     echo "- Directory: \`$where\`  (pid $pid, $tty, last active $last, $status)"
+    [ -n "$loc" ] && echo "- herdr: $loc"
     [ -n "$prs" ] && echo "- PRs: $prs"
     [ -n "$prompt" ] && echo "- Your last message: $prompt"
     echo "- Reopen: \`claude -r $sid\`"
