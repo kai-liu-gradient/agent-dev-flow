@@ -32,10 +32,11 @@ the repo's AGENTS.md asks for (default: the user's language); code and comments 
 |---|---|
 | 小 small | One area, under ~1 hour, no open product question. A bug, copy, one component. |
 | 中 medium | One feature with clear edges, half a day to a day, a few decisions to make. |
-| 大 large | Several PRs, front and back end, days of work, or touches schema plus pods plus UI. |
+| 大 large | Several PRs, front and back end, days of work, or touches data model, infrastructure and UI together. |
 
-Bump one size up when it touches a Tier B area (schema, pods/bootstrap, k8s,
-billing, auth) and the user has not decided the approach yet. Say the result
+Bump one size up when it touches a Tier B area (the repo's AGENTS.md lists them;
+typically schema and migrations, infrastructure, billing, auth) and the user has
+not decided the approach yet. Say the result
 as one line, e.g. `判断为「中」：要改 API 和设置页，有 2 个需要你定的点。` and continue
 without waiting, unless the user overrides.
 
