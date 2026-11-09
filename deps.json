@@ -1,0 +1,45 @@
+{
+  "$comment": "What the skills in this repo call. install.sh reads this file. 'required' is installed by default; 'optional' only with --with-optional.",
+  "skills": {
+    "required": [
+      {
+        "name": "grilling",
+        "source": "mattpocock/skills",
+        "used_by": ["work"],
+        "why": "/work 中、大需求开工前一次性把决策问清楚"
+      },
+      {
+        "name": "code-review",
+        "source": "mattpocock/skills",
+        "used_by": ["work", "agent-kit"],
+        "why": "每个 PR 交给人之前做一次新上下文的审查"
+      }
+    ],
+    "optional": [
+      {
+        "name": "agent-browser",
+        "source": "vercel-labs/agent-browser",
+        "used_by": ["work"],
+        "why": "UI 改动的截图和无头浏览器检查"
+      },
+      {
+        "name": "chrome-use",
+        "source": "leeguooooo/chrome-use",
+        "used_by": ["work"],
+        "why": "需要用你已登录的 Chrome 检查页面时"
+      }
+    ]
+  },
+  "tools": {
+    "required": [
+      { "name": "git", "why": "worktree、分支、提交" },
+      { "name": "gh", "why": "issue、PR、合并", "install": "brew install gh && gh auth login" },
+      { "name": "jq", "why": "脚本解析 JSON", "install": "brew install jq" },
+      { "name": "npx", "why": "安装依赖 skill（npx skills）", "install": "安装 Node.js" }
+    ],
+    "optional": [
+      { "name": "herdr", "why": "/work 大需求时自动开主控 tab；没有时打印命令让你手动开" },
+      { "name": "lsof", "why": "会话清点脚本 sessions.sh 用它找进程目录（macOS 自带）" }
+    ]
+  }
+}
