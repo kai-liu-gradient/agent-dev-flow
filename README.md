@@ -18,7 +18,7 @@
 ## 安装
 
 ```bash
-git clone <this repo> ~/workspace/agent-dev-flow
+git clone git@github.com:kai-liu-gradient/agent-dev-flow.git ~/workspace/agent-dev-flow
 cd ~/workspace/agent-dev-flow
 ./install.sh                    # 本仓库的 skill + 必需依赖
 ./install.sh --with-optional    # 再加上可选依赖（浏览器检查）
